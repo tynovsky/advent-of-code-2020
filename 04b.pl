@@ -7,21 +7,17 @@ use Data::Dumper;
 
 my $valid = 0;
 my $input = {};
-while (my $line = <<>>) {
-    chomp($line);
-    if ($line =~ /^$/) {
-        print Dumper($input);
+while (1) {
+    my $line = <<>>;
+    if (!$line || $line =~ /^$/) {
         $valid += validate($input);
         $input = {} 
     }
-    my @fields = split / /, $line;
-    for my $f (@fields) {
-        my ($key, $value) = split /:/, $f;
-        $input->{$key} = $value
-    }
+    last if ! defined $line;
+
+    chomp $line;
+    $input = { %$input, map { split /:/, $_ } (split / /, $line) };
 }
-print Dumper($input);
-$valid += validate($input);
 print "$valid\n";
 
 
