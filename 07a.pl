@@ -20,12 +20,12 @@ while (my $line = <<>>) {
     }
 }
 
-my @stack = ('shiny gold');
+my @queue = ('shiny gold');
 my %seen = ();
-while (my $color = shift @stack) {
+while (my $color = shift @queue) {
     next if $seen{$color};
     $seen{$color} = 1;
-    push @stack, keys %{$can_be_in{$color}};
+    push @queue, keys %{$can_be_in{$color}};
 }
 
 print scalar(keys %seen) - 1, "\n";
