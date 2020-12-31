@@ -75,4 +75,51 @@ sub flip_both($edges) {
     return flip_horizontally(flip_vertically($edges))
 }
 
+sub get_content($self, $orientation) {
+    my $content = $self->strip_edges();
+    if ($orientation > 3) {
+        $content = rotate_content($content);
+    }
+    return $content                            if $orientation % 4 == 0;
+    return flip_content_horizontally($content) if $orientation % 4 == 1;
+    return flip_content_vertically($content)   if $orientation % 4 == 2;
+    return flip_content_both($content)         if $orientation % 4 == 3;
+}
+
+sub strip_edges($self) {
+    my @content = @{$self->raw};
+    shift @content;
+    pop @content;
+    s/^.// for @content;
+    s/.$// for @content;
+    return \@content;
+}
+
+sub rotate_content($content) {
+    my @content = @$content;
+    my $size = @content;
+    my @rotated;
+    for my $i (reverse 0 .. $size - 1) {
+        my @row = map { substr $_, $i, 1 } @content;
+        push @rotated, join('', @row);
+    }
+    return \@rotated;
+}
+
+sub flip_content_horizontally($content) {
+    my @content = @$content;
+    my @flipped = map {scalar(reverse($_))} @content;
+    return \@flipped
+}
+
+sub flip_content_vertically($content) {
+    return [reverse @$content]
+}
+
+sub flip_content_both($content) {
+    return flip_content_horizontally(flip_content_vertically($content))
+}
+
+
+
 1;
